@@ -12,9 +12,11 @@ export default async function handler(req, res) {
   if (req.method !== 'POST')   return res.status(405).json({ error: 'Method not allowed' });
 
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
+  if (!apiKey || apiKey.length < 5) {
     return res.status(500).json({
-      error: 'OPENAI_API_KEY no está configurada en las variables de entorno de Vercel.',
+      error: 'OPENAI_API_KEY no está configurada o está vacía.',
+      type: typeof apiKey,
+      length: apiKey ? apiKey.length : 0,
       envKeys: Object.keys(process.env)
     });
   }
