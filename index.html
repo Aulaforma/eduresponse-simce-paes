@@ -493,6 +493,36 @@
     </div>
   </div>
 
+  <!-- ═══════════ MODAL CONFIGURACIÓN API KEY ═══════════ -->
+  <div id="settings-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeSettings()">
+    <div class="modal-box" style="max-width:500px">
+      <div class="modal-header">
+        <div>
+          <h3>⚙️ Configuración</h3>
+          <p class="modal-sub">Gestiona tu API key de Google Gemini</p>
+        </div>
+        <button class="modal-close" onclick="closeSettings()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-group">
+          <label for="settings-key-input">API Key de Google Gemini</label>
+          <input type="text" id="settings-key-input" placeholder="AIzaSy..." style="font-family:monospace;font-size:.8rem" />
+        </div>
+        <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:.9rem 1rem;font-size:.8rem;color:#f59e0b;margin-top:.5rem">
+          <strong>¿Cuota agotada (error 429)?</strong><br/>
+          Opciones:<br/>
+          1. Crea una nueva key gratis en <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#f59e0b">aistudio.google.com/apikey</a><br/>
+          2. Habilita facturación en tu proyecto Google Cloud (muy bajo costo)<br/>
+          3. Espera al día siguiente — la cuota se restablece cada 24h
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeSettings()">Cancelar</button>
+        <button class="btn-primary" onclick="saveSettings()">Guardar API Key</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 

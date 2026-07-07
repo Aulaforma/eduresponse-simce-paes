@@ -8,8 +8,10 @@
 /* ──────────────────────────────────────────────────────────────
    CONFIG
    ────────────────────────────────────────────────────────────── */
+const DEFAULT_API_KEY = 'AIzaSyDwwJPNOr2pR_c4t4zvzXJiUBZEj-NwYRA';
+
 const CONFIG = {
-  GEMINI_API_KEY : 'AIzaSyDwwJPNOr2pR_c4t4zvzXJiUBZEj-NwYRA',
+  get GEMINI_API_KEY() { return localStorage.getItem('edu_api_key') || DEFAULT_API_KEY; },
   GEMINI_MODEL   : 'gemini-2.0-flash',
   PDF_SCALE      : 2.0,          // rendering scale (quality)
   REQ_DELAY_MS   : 4200,         // ms between Gemini calls (stay < 15 RPM)
@@ -162,6 +164,23 @@ function loadStorage() {
     state.records = JSON.parse(localStorage.getItem('edu_records') || '[]');
     state.keys    = JSON.parse(localStorage.getItem('edu_keys')    || '[]');
   } catch(e) { state.records = []; state.keys = []; }
+}
+
+/* ── SETTINGS ── */
+function openSettings() {
+  const current = localStorage.getItem('edu_api_key') || DEFAULT_API_KEY;
+  document.getElementById('settings-key-input').value = current;
+  document.getElementById('settings-modal').style.display = 'flex';
+}
+function closeSettings() {
+  document.getElementById('settings-modal').style.display = 'none';
+}
+function saveSettings() {
+  const key = document.getElementById('settings-key-input').value.trim();
+  if (!key) { showToast('Ingresa una API key válida', 'error'); return; }
+  localStorage.setItem('edu_api_key', key);
+  closeSettings();
+  showToast('✓ API key guardada correctamente', 'success');
 }
 function saveStorage() {
   localStorage.setItem('edu_records', JSON.stringify(state.records));
@@ -596,7 +615,10 @@ async function callGemini(imageBase64, tipo) {
 
   if (!res.ok) {
     const errText = await res.text();
-    throw new Error(`Gemini ${res.status}: ${errText.slice(0, 200)}`);
+    let friendly = `Gemini ${res.status}: ${errText.slice(0, 200)}`;
+    if (res.status === 429) friendly = 'Cuota de API agotada (429). Ve a ⚙️ Configuración para cambiar la API key, o espera que se restablezca mañana. Más info: aistudio.google.com/apikey';
+    if (res.status === 401 || res.status === 403) friendly = 'API key inválida o sin permisos. Ve a ⚙️ Configuración para actualizarla.';
+    throw new Error(friendly);
   }
 
   const data = await res.json();
@@ -1238,6 +1260,17 @@ function formatRut(input) {
 document.addEventListener('DOMContentLoaded', () => {
   loadStorage();
   updateBadge();
+
+  // Settings button in header
+  const nav = document.querySelector('.header-nav');
+  if (nav) {
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn';
+    btn.title = 'Configuración API key';
+    btn.innerHTML = '⚙️ Config';
+    btn.onclick = openSettings;
+    nav.appendChild(btn);
+  }
 
   // Set today's date
   const fd = document.getElementById('f-fecha');
