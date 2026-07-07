@@ -493,36 +493,6 @@
     </div>
   </div>
 
-  <!-- ═══════════ MODAL CONFIGURACIÓN API KEY ═══════════ -->
-  <div id="settings-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeSettings()">
-    <div class="modal-box" style="max-width:500px">
-      <div class="modal-header">
-        <div>
-          <h3>⚙️ Configuración</h3>
-          <p class="modal-sub">Gestiona tu API key de OpenAI (GPT-4o)</p>
-        </div>
-        <button class="modal-close" onclick="closeSettings()">×</button>
-      </div>
-      <div class="modal-body">
-        <div class="field-group">
-          <label for="settings-key-input">API Key de OpenAI</label>
-          <input type="text" id="settings-key-input" placeholder="sk-proj-..." style="font-family:monospace;font-size:.8rem" />
-        </div>
-        <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:.9rem 1rem;font-size:.8rem;color:#f59e0b;margin-top:.5rem">
-          <strong>¿Cuota agotada (error 429)?</strong><br/>
-          Opciones:<br/>
-          1. Agrega créditos en <a href="https://platform.openai.com/account/billing" target="_blank" style="color:#f59e0b">platform.openai.com/billing</a><br/>
-          2. Crea una nueva API key en <a href="https://platform.openai.com/api-keys" target="_blank" style="color:#f59e0b">platform.openai.com/api-keys</a><br/>
-          3. Verifica tu uso en <a href="https://platform.openai.com/usage" target="_blank" style="color:#f59e0b">platform.openai.com/usage</a>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeSettings()">Cancelar</button>
-        <button class="btn-primary" onclick="saveSettings()">Guardar API Key</button>
-      </div>
-    </div>
-  </div>
-
   <!-- TOAST -->
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 

@@ -166,23 +166,6 @@ function loadStorage() {
     state.keys    = JSON.parse(localStorage.getItem('edu_keys')    || '[]');
   } catch(e) { state.records = []; state.keys = []; }
 }
-
-/* ── SETTINGS ── */
-function openSettings() {
-  const current = localStorage.getItem('edu_api_key') || DEFAULT_API_KEY;
-  document.getElementById('settings-key-input').value = current;
-  document.getElementById('settings-modal').style.display = 'flex';
-}
-function closeSettings() {
-  document.getElementById('settings-modal').style.display = 'none';
-}
-function saveSettings() {
-  const key = document.getElementById('settings-key-input').value.trim();
-  if (!key) { showToast('Ingresa una API key válida', 'error'); return; }
-  localStorage.setItem('edu_api_key', key);
-  closeSettings();
-  showToast('✓ API key guardada correctamente', 'success');
-}
 function saveStorage() {
   localStorage.setItem('edu_records', JSON.stringify(state.records));
   localStorage.setItem('edu_keys',    JSON.stringify(state.keys));
@@ -594,35 +577,20 @@ async function callGemini(imageBase64, tipo) {
   else if (tipo === 'PAES') prompt = PROMPT_PAES;
   else                      prompt = PROMPT_GLOBAL(state.homeGlobalCount);
 
-  const apiKey = CONFIG.GEMINI_API_KEY;
-
-  // ── OpenAI Vision API ──
-  const body = {
-    model    : CONFIG.OPENAI_MODEL,
-    messages : [{
-      role    : 'user',
-      content : [
-        { type: 'text', text: prompt },
-        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}`, detail: 'high' } }
-      ]
-    }],
-    response_format : { type: 'json_object' },
-    max_tokens      : 3000,
-    temperature     : 0.05,
-  };
-
-  const url = 'https://api.openai.com/v1/chat/completions';
+  // Llamar al proxy serverless seguro local
+  const url = '/api/analyze';
   const res = await fetch(url, {
     method  : 'POST',
-    headers : { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-    body    : JSON.stringify(body),
+    headers : { 'Content-Type': 'application/json' },
+    body    : JSON.stringify({ imageBase64, prompt }),
   });
 
   if (!res.ok) {
     const errText = await res.text();
-    let friendly = `OpenAI ${res.status}: ${errText.slice(0, 300)}`;
-    if (res.status === 429) friendly = 'Cuota de API agotada (429). Ve a ⚙️ Config para actualizar la API key. Más info: platform.openai.com/usage';
-    if (res.status === 401) friendly = 'API key inválida o sin permisos. Ve a ⚙️ Config para actualizarla.';
+    let friendly = `Servidor ${res.status}: ${errText.slice(0, 300)}`;
+    if (res.status === 500 && errText.includes('OPENAI_API_KEY')) {
+      friendly = 'La API key de OpenAI no está configurada en el panel de Vercel. Agrégala en Environment Variables.';
+    }
     throw new Error(friendly);
   }
 
@@ -1264,17 +1232,6 @@ function formatRut(input) {
 document.addEventListener('DOMContentLoaded', () => {
   loadStorage();
   updateBadge();
-
-  // Settings button in header
-  const nav = document.querySelector('.header-nav');
-  if (nav) {
-    const btn = document.createElement('button');
-    btn.className = 'nav-btn';
-    btn.title = 'Configuración API key';
-    btn.innerHTML = '⚙️ Config';
-    btn.onclick = openSettings;
-    nav.appendChild(btn);
-  }
 
   // Set today's date
   const fd = document.getElementById('f-fecha');
