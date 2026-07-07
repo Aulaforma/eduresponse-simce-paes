@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Hoja de Respuestas SIMCE</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',Arial,sans-serif;background:#fff;color:#111;font-size:10pt;padding:0}
+    @page{size:A4;margin:12mm}
+
+    .page{width:100%;max-width:190mm;margin:0 auto;padding:4mm}
+
+    /* Header */
+    .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2.5pt solid #111;padding-bottom:3mm;margin-bottom:3mm}
+    .header-title{font-size:15pt;font-weight:900;letter-spacing:.5px}
+    .logo-box{border:1.5pt solid #111;border-radius:4pt;padding:2mm 4mm;font-size:8pt;font-weight:700;letter-spacing:1px;color:#333}
+
+    /* Info fields */
+    .info-row{display:flex;gap:4mm;margin-bottom:2mm;align-items:baseline}
+    .info-label{font-size:8pt;font-weight:700;white-space:nowrap;min-width:max-content}
+    .info-line{flex:1;border-bottom:1pt solid #333;height:4mm}
+    .info-fixed{font-size:8pt;font-weight:600;border-bottom:1pt solid #333;flex:1;padding-bottom:1mm}
+
+    /* Bubble rows */
+    .bubble-section{margin:2mm 0}
+    .bubble-row{display:flex;align-items:center;gap:2mm;margin:1.5mm 0}
+    .bubble-row-label{font-size:7.5pt;font-weight:700;min-width:50pt}
+    .bubbles{display:flex;gap:2.5mm;flex-wrap:wrap}
+    .bub-item{display:flex;flex-direction:column;align-items:center;gap:.5mm}
+    .bub-item span{font-size:6.5pt;color:#333;white-space:nowrap}
+    .bub{width:9pt;height:9pt;border-radius:50%;border:1pt solid #222;background:#fff}
+
+    /* Instructions */
+    .instructions{border:1pt solid #aaa;border-radius:3pt;padding:2mm 3mm;margin:2mm 0;display:flex;align-items:center;gap:4mm}
+    .instructions p{font-size:7pt;color:#444}
+    .bub-example{display:flex;gap:2mm;align-items:center;font-size:7pt}
+    .bub-filled{width:9pt;height:9pt;border-radius:50%;border:1pt solid #111;background:#111}
+    .bub-wrong1{width:9pt;height:9pt;border-radius:50%;border:1pt solid #aaa;position:relative;overflow:hidden}
+    .bub-wrong1::before,.bub-wrong1::after{content:'';position:absolute;width:60%;height:1pt;background:#555;top:50%;left:20%;transform-origin:center}
+    .bub-wrong1::before{transform:rotate(45deg)}
+    .bub-wrong1::after{transform:rotate(-45deg)}
+
+    /* Answer grid */
+    .answer-section{margin-top:3mm}
+    .answer-section-title{font-size:8pt;font-weight:700;text-align:center;margin-bottom:2mm;letter-spacing:.3px}
+    .columns{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm}
+    .column{border:1pt solid #bbb;border-radius:3pt;overflow:hidden}
+    .col-header{background:#111;color:#fff;font-size:7pt;font-weight:700;text-align:center;padding:1.5mm;letter-spacing:.5px}
+    .answer-row{display:flex;align-items:center;gap:2mm;padding:1mm 2mm;border-bottom:.5pt solid #e0e0e0}
+    .answer-row:last-child{border-bottom:none}
+    .answer-row:nth-child(even){background:#f9f9f9}
+    .q-num{font-size:7.5pt;font-weight:700;min-width:16pt;text-align:right;color:#555}
+    .opts{display:flex;gap:3mm}
+    .opt-bub{display:flex;flex-direction:column;align-items:center;gap:.5mm}
+    .opt-bub span{font-size:6pt;font-weight:700;color:#333}
+    .opt-circle{width:10pt;height:10pt;border-radius:50%;border:1pt solid #333;background:#fff}
+
+    /* Corner marks */
+    .corner-marks{position:relative}
+    .cm{position:absolute;width:5mm;height:5mm;border:.5mm solid #000}
+    .cm.tl{top:0;left:0;border-right:none;border-bottom:none}
+    .cm.tr{top:0;right:0;border-left:none;border-bottom:none}
+    .cm.bl{bottom:0;left:0;border-right:none;border-top:none}
+    .cm.br{bottom:0;right:0;border-left:none;border-top:none}
+
+    @media print{body{background:#fff} .no-print{display:none}}
+    .print-btn{position:fixed;bottom:20px;right:20px;padding:10px 20px;background:#6366f1;color:#fff;border:none;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,.4)}
+    .print-btn:hover{background:#4f46e5}
+  </style>
+</head>
+<body>
+<div class="page" id="main-page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-title">HOJA DE RESPUESTAS</div>
+    <div style="display:flex;align-items:center;gap:4mm">
+      <div style="font-size:7pt;text-align:right;color:#555">Sistema de Evaluación<br/>Escolar Chile</div>
+      <div class="logo-box">SIMCE</div>
+    </div>
+  </div>
+
+  <!-- DATOS ESTUDIANTE -->
+  <div class="info-row">
+    <span class="info-label">Nombre completo:</span>
+    <div class="info-line"></div>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Establecimiento:</span>
+    <div class="info-line"></div>
+    <span class="info-label" style="margin-left:2mm">RUT:</span>
+    <div class="info-line" style="max-width:40mm"></div>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Asignatura:</span>
+    <div class="info-line" style="max-width:70mm"></div>
+    <span class="info-label" style="margin-left:2mm">Fecha:</span>
+    <div class="info-line" style="max-width:35mm"></div>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Evaluación:</span>
+    <div class="info-line"></div>
+  </div>
+
+  <!-- NIVEL -->
+  <div class="bubble-section">
+    <div class="bubble-row">
+      <span class="bubble-row-label">Nivel:</span>
+      <div class="bubbles" id="nivel-bubbles"></div>
+    </div>
+    <div class="bubble-row">
+      <span class="bubble-row-label">Curso:</span>
+      <div class="bubbles" id="curso-bubbles"></div>
+    </div>
+    <div class="bubble-row">
+      <span class="bubble-row-label">Forma:</span>
+      <div class="bubbles">
+        <div class="bub-item"><div class="bub"></div><span>A</span></div>
+        <div class="bub-item"><div class="bub"></div><span>B</span></div>
+        <div class="bub-item"><div class="bub"></div><span>C</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTRUCCIONES -->
+  <div class="instructions">
+    <p>Forma de llenar los círculos:</p>
+    <div class="bub-example">
+      <span>Correcta:</span><div class="bub-filled"></div>
+      <span>Incorrectas:</span>
+      <div class="bub-wrong1"></div>
+      <div class="bub" style="border:1pt solid #aaa;background:#d0d0d0"></div>
+    </div>
+    <p style="margin-left:auto;font-size:6.5pt;color:#777">SIMCE · 45 preguntas · Opciones A, B, C, D</p>
+  </div>
+
+  <!-- ANSWER GRID -->
+  <div class="answer-section">
+    <div class="columns" id="simce-columns"></div>
+  </div>
+
+</div>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 Imprimir</button>
+
+<script>
+  // Nivel bubbles
+  const niveles = [
+    {label:'1°B',text:'1°'},
+    {label:'2°B',text:'2°'},
+    {label:'3°B',text:'3°'},
+    {label:'4°B',text:'4°'},
+    {label:'5°B',text:'5°'},
+    {label:'6°B',text:'6°'},
+    {label:'7°B',text:'7°'},
+    {label:'8°B',text:'8°'},
+    {label:'1°M',text:'1°M'},
+    {label:'2°M',text:'2°M'},
+    {label:'3°M',text:'3°M'},
+    {label:'4°M',text:'4°M'},
+  ];
+  const nivelEl = document.getElementById('nivel-bubbles');
+  niveles.forEach(n => {
+    nivelEl.innerHTML += `<div class="bub-item"><div class="bub"></div><span>${n.text}</span></div>`;
+  });
+
+  // Curso bubbles
+  const cursoEl = document.getElementById('curso-bubbles');
+  'abcdefghij'.split('').forEach(l => {
+    cursoEl.innerHTML += `<div class="bub-item"><div class="bub"></div><span>${l}</span></div>`;
+  });
+
+  // Answer grid (45 questions, 3 cols of 15)
+  const colsEl = document.getElementById('simce-columns');
+  const opts = ['A','B','C','D'];
+  for(let col=0;col<3;col++){
+    const start = col*15+1, end = col*15+15;
+    let html = `<div class="column">
+      <div class="col-header">Preguntas ${start.toString().padStart(2,'0')} – ${end.toString().padStart(2,'0')}</div>`;
+    for(let q=start;q<=end;q++){
+      html += `<div class="answer-row">
+        <span class="q-num">${q.toString().padStart(2,'0')}</span>
+        <div class="opts">`;
+      opts.forEach(o => {
+        html += `<div class="opt-bub"><div class="opt-circle"></div><span>${o}</span></div>`;
+      });
+      html += `</div></div>`;
+    }
+    html += '</div>';
+    colsEl.innerHTML += html;
+  }
+</script>
+</body>
+</html>
