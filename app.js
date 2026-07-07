@@ -10,7 +10,7 @@
    ────────────────────────────────────────────────────────────── */
 const CONFIG = {
   GEMINI_API_KEY : 'AIzaSyDwwJPNOr2pR_c4t4zvzXJiUBZEj-NwYRA',
-  GEMINI_MODEL   : 'gemini-1.5-flash',
+  GEMINI_MODEL   : 'gemini-2.0-flash',
   PDF_SCALE      : 2.0,          // rendering scale (quality)
   REQ_DELAY_MS   : 4200,         // ms between Gemini calls (stay < 15 RPM)
   MAX_PAGES      : 40,
@@ -582,8 +582,8 @@ async function callGemini(imageBase64, tipo) {
       ]
     }],
     generationConfig: {
-      temperature         : 0.05,
-      response_mime_type  : 'application/json',
+      temperature      : 0.05,
+      responseMimeType : 'application/json',
     }
   };
 
