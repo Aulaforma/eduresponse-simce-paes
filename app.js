@@ -8,11 +8,12 @@
 /* ──────────────────────────────────────────────────────────────
    CONFIG
    ────────────────────────────────────────────────────────────── */
-const DEFAULT_API_KEY = 'AIzaSyDwwJPNOr2pR_c4t4zvzXJiUBZEj-NwYRA';
+const DEFAULT_API_KEY = ''; // Ingresa tu API key en ⚙️ Config
 
 const CONFIG = {
   get GEMINI_API_KEY() { return localStorage.getItem('edu_api_key') || DEFAULT_API_KEY; },
-  GEMINI_MODEL   : 'gemini-2.0-flash',
+  AI_PROVIDER    : 'openai',
+  OPENAI_MODEL   : 'gpt-4o-mini',
   PDF_SCALE      : 2.0,          // rendering scale (quality)
   REQ_DELAY_MS   : 4200,         // ms between Gemini calls (stay < 15 RPM)
   MAX_PAGES      : 40,
@@ -589,43 +590,46 @@ async function renderPageToBase64(pdf, pageNum) {
 
 async function callGemini(imageBase64, tipo) {
   let prompt;
-  if (tipo === 'SIMCE')  prompt = PROMPT_SIMCE;
+  if (tipo === 'SIMCE')     prompt = PROMPT_SIMCE;
   else if (tipo === 'PAES') prompt = PROMPT_PAES;
-  else prompt = PROMPT_GLOBAL(state.homeGlobalCount);
+  else                      prompt = PROMPT_GLOBAL(state.homeGlobalCount);
 
+  const apiKey = CONFIG.GEMINI_API_KEY;
+
+  // ── OpenAI Vision API ──
   const body = {
-    contents: [{
-      parts: [
-        { text: prompt },
-        { inline_data: { mime_type: 'image/jpeg', data: imageBase64 } }
+    model    : CONFIG.OPENAI_MODEL,
+    messages : [{
+      role    : 'user',
+      content : [
+        { type: 'text', text: prompt },
+        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}`, detail: 'high' } }
       ]
     }],
-    generationConfig: {
-      temperature      : 0.05,
-      responseMimeType : 'application/json',
-    }
+    response_format : { type: 'json_object' },
+    max_tokens      : 3000,
+    temperature     : 0.05,
   };
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.GEMINI_MODEL}:generateContent?key=${CONFIG.GEMINI_API_KEY}`;
-  const res  = await fetch(url, {
+  const url = 'https://api.openai.com/v1/chat/completions';
+  const res = await fetch(url, {
     method  : 'POST',
-    headers : { 'Content-Type': 'application/json' },
+    headers : { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body    : JSON.stringify(body),
   });
 
   if (!res.ok) {
     const errText = await res.text();
-    let friendly = `Gemini ${res.status}: ${errText.slice(0, 200)}`;
-    if (res.status === 429) friendly = 'Cuota de API agotada (429). Ve a ⚙️ Configuración para cambiar la API key, o espera que se restablezca mañana. Más info: aistudio.google.com/apikey';
-    if (res.status === 401 || res.status === 403) friendly = 'API key inválida o sin permisos. Ve a ⚙️ Configuración para actualizarla.';
+    let friendly = `OpenAI ${res.status}: ${errText.slice(0, 300)}`;
+    if (res.status === 429) friendly = 'Cuota de API agotada (429). Ve a ⚙️ Config para actualizar la API key. Más info: platform.openai.com/usage';
+    if (res.status === 401) friendly = 'API key inválida o sin permisos. Ve a ⚙️ Config para actualizarla.';
     throw new Error(friendly);
   }
 
-  const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error('Respuesta vacía de Gemini');
+  const data  = await res.json();
+  const text  = data?.choices?.[0]?.message?.content;
+  if (!text) throw new Error('Respuesta vacía de OpenAI');
 
-  // Parse JSON (handle possible markdown wrapping)
   const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
   return JSON.parse(cleaned);
 }
