@@ -21,10 +21,12 @@ export default async function handler(req, res) {
     });
   }
 
-  const { imageBase64, prompt } = req.body || {};
+  const { imageBase64, prompt, model } = req.body || {};
   if (!imageBase64 || !prompt) {
     return res.status(400).json({ error: 'Faltan campos: imageBase64, prompt' });
   }
+
+  const selectedModel = model || 'gpt-4o';
 
   try {
     const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -34,7 +36,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model    : 'gpt-4o-mini',
+        model    : selectedModel,
         messages : [{
           role   : 'user',
           content: [

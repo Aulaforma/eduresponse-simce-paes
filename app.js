@@ -13,8 +13,8 @@ const DEFAULT_API_KEY = ''; // Ingresa tu API key en ⚙️ Config
 const CONFIG = {
   get GEMINI_API_KEY() { return localStorage.getItem('edu_api_key') || DEFAULT_API_KEY; },
   AI_PROVIDER    : 'openai',
-  OPENAI_MODEL   : 'gpt-4o-mini',
-  PDF_SCALE      : 2.0,          // rendering scale (quality)
+  OPENAI_MODEL   : 'gpt-4o',      // Cambiado a gpt-4o para máxima precisión de visión
+  PDF_SCALE      : 3.0,          // Escala subida a 3.0 para una calidad de imagen ultra-definida
   REQ_DELAY_MS   : 4200,         // ms between Gemini calls (stay < 15 RPM)
   MAX_PAGES      : 40,
 
@@ -55,12 +55,16 @@ ESTRUCTURA DE LA HOJA:
 - Parte superior derecha:
   * Grilla de burbujas para "RUT": 9 columnas con burbujas de dígitos. Las primeras 8 columnas van de 0 a 9. La novena columna (dígito verificador) contiene dígitos 0-9 y la letra K.
     Reconstruye el RUT de izquierda a derecha identificando qué burbuja está marcada en cada columna. Añade el guion antes de la última columna (ej. "12345678-9" o "23456789-K").
-- Parte inferior: grilla con 45 preguntas numeradas 01 a 45.
-  Cada pregunta tiene exactamente 4 opciones: A, B, C, D.
+- Parte inferior: grilla con 45 preguntas organizadas en 3 columnas de 15 preguntas cada una:
+  * Columna 1 (izquierda): preguntas 01 a 15.
+  * Columna 2 (centro): preguntas 16 a 30.
+  * Columna 3 (derecha): preguntas 31 a 45.
+  Cada pregunta está en una fila con su número correspondiente y sus 4 burbujas de opciones: A, B, C, D.
 
 REGLAS PARA DETECTAR BURBUJAS (RUT, Nivel, Curso, Respuestas):
-- Una burbuja RELLENA/OSCURA/NEGRA = opción seleccionada.
-- Una burbuja VACÍA/CLARA/CON BORDE FINO = no seleccionada.
+- Una burbuja RELLENA/OSCURA/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
+- Una burbuja VACÍA/CLARA/SIN MARCA = no seleccionada (null).
+- IMPORTANTE: Analiza con mucho cuidado cada burbuja de cada columna y pregunta. Busca marcas de lápiz dentro de la circunferencia. Si la marca está rellena o tiene un trazo oscuro adentro, considérala marcada. Si no hay marcas o el círculo está limpio, es nulo (null).
 - Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
 - Si no hay marca en una columna o pregunta, usa null.
 
@@ -94,12 +98,18 @@ ESTRUCTURA DE LA HOJA:
 - Parte superior derecha:
   * Grilla de burbujas para "RUT": 9 columnas con burbujas de dígitos. Las primeras 8 columnas van de 0 a 9. La novena columna (dígito verificador) contiene dígitos 0-9 y la letra K.
     Reconstruye el RUT de izquierda a derecha identificando qué burbuja está marcada en cada columna. Añade el guion antes de la última columna (ej. "12345678-9" o "23456789-K").
-- Parte inferior: grilla con 75 preguntas numeradas 01 a 75.
-  Cada pregunta tiene exactamente 5 opciones: A, B, C, D, E.
+- Parte inferior: grilla con 75 preguntas organizadas en 5 columnas de 15 preguntas cada una:
+  * Columna 1: preguntas 01 a 15.
+  * Columna 2: preguntas 16 a 30.
+  * Columna 3: preguntas 31 a 45.
+  * Columna 4: preguntas 46 a 60.
+  * Columna 5: preguntas 61 a 75.
+  Cada pregunta está en una fila con su número correspondiente y sus 5 burbujas de opciones: A, B, C, D, E.
 
 REGLAS PARA DETECTAR BURBUJAS (RUT, Nivel, Curso, Respuestas):
-- Una burbuja RELLENA/OSCURA/NEGRA = opción seleccionada.
-- Una burbuja VACÍA/CLARA/CON BORDE FINO = no seleccionada.
+- Una burbuja RELLENA/OSCURA/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
+- Una burbuja VACÍA/CLARA/SIN MARCA = no seleccionada (null).
+- IMPORTANTE: Analiza con mucho cuidado cada burbuja de cada columna y pregunta. Busca marcas de lápiz dentro de la circunferencia. Si la marca está rellena o tiene un trazo oscuro adentro, considérala marcada. Si no hay marcas o el círculo está limpio, es nulo (null).
 - Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
 - Si no hay marca en una columna o pregunta, usa null.
 
@@ -133,7 +143,14 @@ ESTRUCTURA DE LA HOJA:
   * Fila "Curso": letra de curso (A, B, C...).
 - Parte superior derecha:
   * Grilla de burbujas del "RUT": 9 columnas con dígitos (las primeras 8 son 0-9, la última es 0-9 y K). Reconstruye el RUT completo con guion antes de la última columna (ej. "12345678-9").
-- Grilla de respuestas: de la pregunta 1 a la ${n}.
+- Grilla de respuestas: de la pregunta 1 a la ${n}. Las preguntas están organizadas en columnas verticales de 15 o 20 preguntas. Cada fila tiene su número y sus opciones A, B, C, D.
+
+REGLAS PARA DETECTAR BURBUJAS (RUT, Nivel, Curso, Respuestas):
+- Una burbuja RELLENA/OSCURA/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
+- Una burbuja VACÍA/CLARA/SIN MARCA = no seleccionada (null).
+- IMPORTANTE: Analiza con mucho cuidado cada burbuja. Busca marcas de lápiz dentro de la circunferencia. Si está rellena, considérala marcada. Si no hay marcas, es null.
+- Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
+- Si no hay marca en una columna o pregunta, usa null.
 
 Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
 {
@@ -614,7 +631,7 @@ async function callGemini(imageBase64, tipo) {
   const res = await fetch(url, {
     method  : 'POST',
     headers : { 'Content-Type': 'application/json' },
-    body    : JSON.stringify({ imageBase64, prompt }),
+    body    : JSON.stringify({ imageBase64, prompt, model: CONFIG.OPENAI_MODEL }),
   });
 
   if (!res.ok) {
