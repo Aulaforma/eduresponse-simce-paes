@@ -60,14 +60,21 @@
           </div>
         </div>
 
-        <!-- Config extra (Global) -->
-        <div id="home-global-config" class="global-config" style="display:none">
+        <!-- Configuración de Lote PDF -->
+        <div id="home-upload-config" class="global-config">
           <div class="field-row">
             <div class="field-group">
-              <label>Asignatura</label>
-              <input type="text" id="home-global-asig" placeholder="Ej: Artes, Ed. Física..." />
+              <label for="upload-key-select">Clave de Corrección (Pauta)</label>
+              <select id="upload-key-select" onchange="handleUploadKeyChange()">
+                <option value="">— Sin pauta (solo extraer respuestas) —</option>
+              </select>
             </div>
-            <div class="field-group">
+            <div class="field-group" id="upload-asig-group">
+              <label for="upload-asig-select">Asignatura</label>
+              <select id="upload-asig-select" onchange="handleUploadAsigChange()"></select>
+              <input type="text" id="upload-asig-libre" placeholder="Ej: Artes, Ed. Física..." style="display:none;margin-top:.5rem" />
+            </div>
+            <div class="field-group" id="upload-count-group" style="display:none">
               <label>N° de preguntas</label>
               <div class="count-selector">
                 <button type="button" class="count-btn" id="hg-20" onclick="setHomeGlobalCount(20)">20</button>
@@ -225,11 +232,27 @@
             </div>
           </div>
           <div class="field-row">
-            <div class="field-group">
-              <label for="f-curso">Curso</label>
-              <select id="f-curso"><option value="">— Seleccionar —</option></select>
+            <div class="field-group" style="flex: 2;">
+              <label for="f-curso">Nivel</label>
+              <select id="f-curso" onchange="loadKeyForForm()"><option value="">— Seleccionar —</option></select>
             </div>
-            <div class="field-group">
+            <div class="field-group" style="flex: 1;">
+              <label for="f-letra">Letra</label>
+              <select id="f-letra" onchange="loadKeyForForm()">
+                <option value="">—</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="G">G</option>
+                <option value="H">H</option>
+                <option value="I">I</option>
+                <option value="J">J</option>
+              </select>
+            </div>
+            <div class="field-group" style="flex: 2;">
               <label for="f-asignatura">Asignatura</label>
               <select id="f-asignatura" onchange="loadKeyForForm()"><option value="">— Seleccionar —</option></select>
             </div>

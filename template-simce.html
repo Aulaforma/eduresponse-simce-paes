@@ -22,6 +22,92 @@
     .info-line{flex:1;border-bottom:1pt solid #333;height:4mm}
     .info-fixed{font-size:8pt;font-weight:600;border-bottom:1pt solid #333;flex:1;padding-bottom:1mm}
 
+    /* Contenedores de estudiante y RUT */
+    .student-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 6mm;
+      margin-bottom: 2mm;
+      align-items: stretch;
+    }
+    .student-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    /* RUT Container */
+    .rut-container {
+      border: 1.5pt solid #111;
+      border-radius: 4px;
+      padding: 1.5mm;
+      background: #fcfcfc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: max-content;
+    }
+    .rut-title {
+      font-size: 7.5pt;
+      font-weight: 900;
+      letter-spacing: .5px;
+      margin-bottom: 1.5mm;
+      text-transform: uppercase;
+    }
+    .rut-grid-header {
+      display: flex;
+      gap: 1mm;
+      margin-bottom: 1.5mm;
+      align-items: center;
+    }
+    .rut-header-box {
+      width: 10pt;
+      height: 12pt;
+      border: 1pt solid #111;
+      background: #fff;
+    }
+    .rut-header-sep {
+      font-size: 8pt;
+      font-weight: 900;
+      margin: 0 1px;
+    }
+    .rut-grid {
+      display: flex;
+      gap: 1mm;
+      align-items: flex-start;
+    }
+    .rut-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .rut-col-sep {
+      align-self: center;
+      font-size: 10pt;
+      font-weight: 900;
+      margin: 0 1px;
+      margin-top: 12px;
+    }
+    .rut-bub-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .2mm;
+    }
+    .rut-bub-item span {
+      font-size: 5.5pt;
+      font-weight: 700;
+      color: #111;
+    }
+    .rut-bub {
+      width: 8.5pt;
+      height: 8.5pt;
+      border-radius: 50%;
+      border: 1pt solid #222;
+      background: #fff;
+    }
+
     /* Bubble rows */
     .bubble-section{margin:2mm 0}
     .bubble-row{display:flex;align-items:center;gap:2mm;margin:1.5mm 0}
@@ -81,45 +167,55 @@
     </div>
   </div>
 
-  <!-- DATOS ESTUDIANTE -->
-  <div class="info-row">
-    <span class="info-label">Nombre completo:</span>
-    <div class="info-line"></div>
-  </div>
-  <div class="info-row">
-    <span class="info-label">Establecimiento:</span>
-    <div class="info-line"></div>
-    <span class="info-label" style="margin-left:2mm">RUT:</span>
-    <div class="info-line" style="max-width:40mm"></div>
-  </div>
-  <div class="info-row">
-    <span class="info-label">Asignatura:</span>
-    <div class="info-line" style="max-width:70mm"></div>
-    <span class="info-label" style="margin-left:2mm">Fecha:</span>
-    <div class="info-line" style="max-width:35mm"></div>
-  </div>
-  <div class="info-row">
-    <span class="info-label">Evaluación:</span>
-    <div class="info-line"></div>
-  </div>
-
-  <!-- NIVEL -->
-  <div class="bubble-section">
-    <div class="bubble-row">
-      <span class="bubble-row-label">Nivel:</span>
-      <div class="bubbles" id="nivel-bubbles"></div>
-    </div>
-    <div class="bubble-row">
-      <span class="bubble-row-label">Curso:</span>
-      <div class="bubbles" id="curso-bubbles"></div>
-    </div>
-    <div class="bubble-row">
-      <span class="bubble-row-label">Forma:</span>
-      <div class="bubbles">
-        <div class="bub-item"><div class="bub"></div><span>A</span></div>
-        <div class="bub-item"><div class="bub"></div><span>B</span></div>
-        <div class="bub-item"><div class="bub"></div><span>C</span></div>
+  <!-- DATOS ESTUDIANTE Y SELECCIÓN DE CURSO / RUT -->
+  <div class="student-container">
+    <div class="student-left">
+      <div class="info-row">
+        <span class="info-label">Nombre completo:</span>
+        <div class="info-line"></div>
       </div>
+      <div class="info-row">
+        <span class="info-label">Establecimiento:</span>
+        <span class="info-fixed">Liceo Andrés Alcázar de Tucapel</span>
+      </div>
+
+      <!-- NIVEL / CURSO / FORMA BUBBLES -->
+      <div class="bubble-section">
+        <div class="bubble-row">
+          <span class="bubble-row-label">Nivel:</span>
+          <div class="bubbles" id="nivel-bubbles"></div>
+        </div>
+        <div class="bubble-row">
+          <span class="bubble-row-label">Curso:</span>
+          <div class="bubbles" id="curso-bubbles"></div>
+        </div>
+        <div class="bubble-row">
+          <span class="bubble-row-label">Forma:</span>
+          <div class="bubbles">
+            <div class="bub-item"><div class="bub"></div><span>A</span></div>
+            <div class="bub-item"><div class="bub"></div><span>B</span></div>
+            <div class="bub-item"><div class="bub"></div><span>C</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RUT BUBBLE GRID -->
+    <div class="rut-container">
+      <span class="rut-title">RUT Estudiante</span>
+      <div class="rut-grid-header">
+        <div class="rut-header-box"></div>
+        <div class="rut-header-box"></div>
+        <div class="rut-header-box"></div>
+        <div class="rut-header-box"></div>
+        <div class="rut-header-box"></div>
+        <div class="rut-header-box"></div>
+        <div class="rut-header-box"></div>
+        <div class="rut-header-box"></div>
+        <div class="rut-header-sep">-</div>
+        <div class="rut-header-box"></div>
+      </div>
+      <div class="rut-grid" id="rut-grid-bubbles"></div>
     </div>
   </div>
 
@@ -145,6 +241,31 @@
 <button class="print-btn no-print" onclick="window.print()">🖨 Imprimir</button>
 
 <script>
+  // RUT bubbles
+  const rutGridEl = document.getElementById('rut-grid-bubbles');
+  for (let col = 0; col < 9; col++) {
+    const colDiv = document.createElement('div');
+    colDiv.className = 'rut-col';
+    
+    if (col === 8) {
+      const sep = document.createElement('div');
+      sep.className = 'rut-col-sep';
+      sep.textContent = '-';
+      rutGridEl.appendChild(sep);
+    }
+    
+    const isDV = (col === 8);
+    const digits = isDV ? ['0','1','2','3','4','5','6','7','8','9','K'] : ['0','1','2','3','4','5','6','7','8','9'];
+    
+    digits.forEach(d => {
+      const bubItem = document.createElement('div');
+      bubItem.className = 'rut-bub-item';
+      bubItem.innerHTML = `<div class="rut-bub"></div><span>${d}</span>`;
+      colDiv.appendChild(bubItem);
+    });
+    rutGridEl.appendChild(colDiv);
+  }
+
   // Nivel bubbles
   const niveles = [
     {label:'1°B',text:'1°'},

@@ -43,34 +43,38 @@ const CONFIG = {
    GEMINI PROMPTS
    ────────────────────────────────────────────────────────────── */
 const PROMPT_SIMCE = `
-Analiza esta imagen de una Hoja de Respuestas para ensayo SIMCE escolar chileno (modelo Aptus u otro similar).
+Analiza esta imagen de una Hoja de Respuestas para ensayo SIMCE escolar chileno.
 
 ESTRUCTURA DE LA HOJA:
-- Parte superior: campos de texto "Nombre completo", "Establecimiento", "Asignatura"
-- Fila "Nivel": burbujas que indican el año escolar (1°Básico a 4°Medio)
-- Fila "Curso": burbujas con letras (a,b,c,d,e,f...)
-- Parte inferior: grilla con 45 preguntas numeradas 01 a 45, en 3 columnas de 15
-  Cada pregunta tiene exactamente 4 opciones: A, B, C, D
-  
-REGLAS PARA DETECTAR RESPUESTAS:
-- Una burbuja RELLENA/OSCURA/NEGRA = respuesta marcada por el alumno
-- Una burbuja VACÍA/CLARA = no marcada
-- Si hay múltiples burbujas oscuras en una pregunta, elige la más rellena
-- Si una pregunta no tiene marca visible, usa null
+- Parte superior izquierda:
+  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este texto.
+  * Texto fijo "Establecimiento: Liceo Andrés Alcázar de Tucapel". No necesitas extraerlo.
+  * Fila "Nivel": burbujas que indican el año escolar (1° Básico a 4° Medio).
+  * Fila "Curso": burbujas con letras (A, B, C, D...) que representan la letra del curso.
+  * Fila "Forma": burbujas de opción (A, B, C).
+- Parte superior derecha:
+  * Grilla de burbujas para "RUT": 9 columnas con burbujas de dígitos. Las primeras 8 columnas van de 0 a 9. La novena columna (dígito verificador) contiene dígitos 0-9 y la letra K.
+    Reconstruye el RUT de izquierda a derecha identificando qué burbuja está marcada en cada columna. Añade el guion antes de la última columna (ej. "12345678-9" o "23456789-K").
+- Parte inferior: grilla con 45 preguntas numeradas 01 a 45.
+  Cada pregunta tiene exactamente 4 opciones: A, B, C, D.
+
+REGLAS PARA DETECTAR BURBUJAS (RUT, Nivel, Curso, Respuestas):
+- Una burbuja RELLENA/OSCURA/NEGRA = opción seleccionada.
+- Una burbuja VACÍA/CLARA/CON BORDE FINO = no seleccionada.
+- Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
+- Si no hay marca en una columna o pregunta, usa null.
 
 Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
 {
   "nombre": "nombre del estudiante o null",
-  "rut": "RUT si aparece o null",
-  "asignatura": "asignatura indicada en la hoja o null",
-  "nivel": "nivel detectado en burbujas (ej: '2° Básico', '6° Básico', '2° Medio') o null",
+  "rut": "RUT completo detectado (ej: '12345678-9') o null",
+  "nivel": "nivel detectado (ej: '2° Básico', '4° Básico', '2° Medio') o null",
   "curso": "letra del curso detectada (ej: 'A', 'B') o null",
+  "forma": "letra de la forma detectada (A, B o C) o null",
   "tipo": "SIMCE",
   "respuestas": {
     "1": "A o B o C o D o null",
     "2": "A o B o C o D o null",
-    "3": null,
-    "4": "B",
     "...": "... continuar hasta la pregunta 45 ..."
   }
 }
@@ -81,27 +85,35 @@ const PROMPT_PAES = `
 Analiza esta imagen de una Hoja de Respuestas para ensayo PAES escolar chileno.
 
 ESTRUCTURA DE LA HOJA:
-- Parte superior: campos de texto "Nombre completo", "Asignatura", "Curso"
-- Grilla de respuestas: 75 preguntas numeradas 01 a 75
-  Cada pregunta tiene exactamente 5 opciones: A, B, C, D, E
+- Parte superior izquierda:
+  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este texto.
+  * Texto fijo "Establecimiento: Liceo Andrés Alcázar de Tucapel". No necesitas extraerlo.
+  * Fila "Nivel/Curso": burbujas que indican el año escolar (3° Medio o 4° Medio).
+  * Fila "Curso": burbujas con letras (A, B, C, D...) que representan la letra del curso.
+  * Fila "Forma": burbujas de opción (A, B, C).
+- Parte superior derecha:
+  * Grilla de burbujas para "RUT": 9 columnas con burbujas de dígitos. Las primeras 8 columnas van de 0 a 9. La novena columna (dígito verificador) contiene dígitos 0-9 y la letra K.
+    Reconstruye el RUT de izquierda a derecha identificando qué burbuja está marcada en cada columna. Añade el guion antes de la última columna (ej. "12345678-9" o "23456789-K").
+- Parte inferior: grilla con 75 preguntas numeradas 01 a 75.
+  Cada pregunta tiene exactamente 5 opciones: A, B, C, D, E.
 
-REGLAS PARA DETECTAR RESPUESTAS:
-- Una burbuja RELLENA/OSCURA/NEGRA = respuesta marcada por el alumno
-- Una burbuja VACÍA/CLARA = no marcada
-- Si hay múltiples burbujas oscuras en una pregunta, elige la más rellena
-- Si una pregunta no tiene marca, usa null
+REGLAS PARA DETECTAR BURBUJAS (RUT, Nivel, Curso, Respuestas):
+- Una burbuja RELLENA/OSCURA/NEGRA = opción seleccionada.
+- Una burbuja VACÍA/CLARA/CON BORDE FINO = no seleccionada.
+- Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
+- Si no hay marca en una columna o pregunta, usa null.
 
-Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown):
+Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
 {
   "nombre": "nombre del estudiante o null",
-  "rut": "RUT si aparece o null",
-  "asignatura": "asignatura indicada en la hoja o null",
+  "rut": "RUT completo detectado (ej: '12345678-9') o null",
   "nivel": "nivel detectado (ej: '3° Medio', '4° Medio') o null",
-  "curso": "letra del curso (ej: 'A', 'B') o null",
+  "curso": "letra del curso detectada (ej: 'A', 'B') o null",
+  "forma": "letra de la forma detectada (A, B o C) o null",
   "tipo": "PAES",
   "respuestas": {
     "1": "A o B o C o D o E o null",
-    "2": null,
+    "2": "A o B o C o D o E o null",
     "...": "... continuar hasta la pregunta 75 ..."
   }
 }
@@ -113,16 +125,28 @@ Analiza esta imagen de una Hoja de Respuestas de evaluación escolar chilena.
 
 La hoja tiene ${n} preguntas con opciones A, B, C, D.
 
-Extrae:
-- "nombre": nombre del estudiante escrito a mano
-- "rut": RUT si aparece
-- "asignatura": asignatura indicada
-- "nivel": nivel o curso (ej: "7° Básico")
-- "curso": letra del curso
-- "respuestas": objeto con claves "1" a "${n}", valores A/B/C/D o null
+ESTRUCTURA DE LA HOJA:
+- Parte superior izquierda:
+  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este texto.
+  * Texto fijo "Establecimiento: Liceo Andrés Alcázar de Tucapel".
+  * Fila "Nivel": burbujas que indican el nivel escolar.
+  * Fila "Curso": letra de curso (A, B, C...).
+- Parte superior derecha:
+  * Grilla de burbujas del "RUT": 9 columnas con dígitos (las primeras 8 son 0-9, la última es 0-9 y K). Reconstruye el RUT completo con guion antes de la última columna (ej. "12345678-9").
+- Grilla de respuestas: de la pregunta 1 a la ${n}.
 
-Devuelve ÚNICAMENTE JSON (sin texto extra):
-{"nombre":null,"rut":null,"asignatura":null,"nivel":null,"curso":null,"tipo":"GLOBAL","respuestas":{"1":null}}
+Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
+{
+  "nombre": "nombre del estudiante o null",
+  "rut": "RUT completo detectado o null",
+  "nivel": "nivel escolar detectado o null",
+  "curso": "letra de curso detectada o null",
+  "tipo": "GLOBAL",
+  "respuestas": {
+    "1": "A o B o C o D o null",
+    "...": "... continuar hasta la pregunta ${n} ..."
+  }
+}
 `;
 
 /* ──────────────────────────────────────────────────────────────
@@ -197,8 +221,7 @@ function setHomeType(type) {
   document.querySelectorAll('.type-tab').forEach(t => {
     t.classList.toggle('active', t.dataset.type === type);
   });
-  const gc = document.getElementById('home-global-config');
-  if (gc) gc.style.display = type === 'GLOBAL' ? 'block' : 'none';
+  updateUploadConfigFields();
 }
 
 function setHomeGlobalCount(n) {
@@ -225,6 +248,8 @@ function selectType(type) {
   document.getElementById('f-nombre').value  = '';
   document.getElementById('f-rut').value     = '';
   document.getElementById('f-evaluacion').value = '';
+  const fl = document.getElementById('f-letra');
+  if (fl) fl.value = '';
   const fd = document.getElementById('f-fecha');
   if (fd) fd.valueAsDate = new Date();
 }
@@ -354,19 +379,21 @@ function toggleBubble(containerId, q, opt, type, numQ, keyAnswers) {
    MANUAL FORM — SAVE RECORD
    ────────────────────────────────────────────────────────────── */
 function saveRecord() {
-  const nombre = document.getElementById('f-nombre').value.trim();
-  const rut    = document.getElementById('f-rut').value.trim();
-  const fecha  = document.getElementById('f-fecha').value;
-  const curso  = document.getElementById('f-curso').value;
-  const evName = document.getElementById('f-evaluacion').value.trim();
-  let   asig   = document.getElementById('f-asignatura').value;
+  const nombre   = document.getElementById('f-nombre').value.trim();
+  const rut      = document.getElementById('f-rut').value.trim();
+  const fecha    = document.getElementById('f-fecha').value;
+  const cursoVal = document.getElementById('f-curso').value;
+  const letraVal = document.getElementById('f-letra').value;
+  const curso    = buildCursoDisplay(cursoVal, letraVal);
+  const evName   = document.getElementById('f-evaluacion').value.trim();
+  let   asig     = document.getElementById('f-asignatura').value;
 
   if (state.currentType === 'GLOBAL') {
     asig = document.getElementById('f-asignatura-libre').value.trim() || asig;
   }
 
-  if (!nombre) { showToast('Ingresa el nombre del estudiante', 'error'); return; }
-  if (!curso)  { showToast('Selecciona el curso', 'error'); return; }
+  if (!nombre)   { showToast('Ingresa el nombre del estudiante', 'error'); return; }
+  if (!cursoVal) { showToast('Selecciona el curso', 'error'); return; }
 
   const numQ = getDefaultCount(state.currentType);
   const answeredCount = Object.values(state.currentAnswers).filter(Boolean).length;
@@ -401,6 +428,8 @@ function clearForm() {
   document.getElementById('f-rut').value        = '';
   document.getElementById('f-evaluacion').value = '';
   document.getElementById('f-curso').value      = '';
+  const fl = document.getElementById('f-letra');
+  if (fl) fl.value = '';
   if (document.getElementById('f-asignatura'))
     document.getElementById('f-asignatura').value = '';
 }
@@ -416,12 +445,14 @@ function loadKeyForForm() {
   const asig = tipo === 'GLOBAL'
     ? document.getElementById('f-asignatura-libre')?.value?.trim()
     : document.getElementById('f-asignatura')?.value;
-  const curso = document.getElementById('f-curso')?.value;
+  const cursoVal = document.getElementById('f-curso')?.value;
+  const letraVal = document.getElementById('f-letra')?.value;
+  const curso = buildCursoDisplay(cursoVal, letraVal);
 
   const match = state.keys.find(k =>
     k.tipo === tipo &&
     (!k.asig || k.asig === asig) &&
-    (!k.curso || k.curso === curso)
+    (!k.curso || curso.startsWith(k.curso))
   );
 
   const box  = document.getElementById('key-info-box');
@@ -655,7 +686,19 @@ function updateCardData(pageNum, data) {
   const asig   = data.asignatura || '(Sin asignatura)';
   const resp   = Object.values(data.respuestas || {}).filter(Boolean).length;
   const total  = Object.keys(data.respuestas || {}).length;
-  if (metaEl) metaEl.innerHTML = `${asig} · ${curso}<br/>${resp}/${total} respuestas marcadas`;
+
+  // Calculate score if key is selected
+  const selectedKeyId = document.getElementById('upload-key-select')?.value;
+  let scoreText = '';
+  if (selectedKeyId) {
+    const score = calcScore(data.respuestas, Number(selectedKeyId), total);
+    if (score) {
+      const pct = Math.round(score.correct / score.total * 100);
+      scoreText = `<br/><span class="score-chip score-high" style="font-size:0.75rem;padding:2px 6px;margin-top:4px;display:inline-block">${score.correct}/${score.total} (${pct}%)</span>`;
+    }
+  }
+
+  if (metaEl) metaEl.innerHTML = `${asig} · ${curso}<br/>${resp}/${total} respuestas marcadas${scoreText}`;
 
   if (actEl) {
     const existing = actEl.innerHTML;
@@ -699,13 +742,30 @@ function setProgress(done, total, pct, msg) {
 
 /* ── Save all processed results ── */
 function saveAllProcResults() {
+  const selectedKeyId = document.getElementById('upload-key-select')?.value;
+  const keyId = selectedKeyId ? Number(selectedKeyId) : null;
+  const keyObj = keyId ? state.keys.find(k => k.id === keyId) : null;
+
+  // Determine asignatura
+  let batchAsig = '';
+  if (state.homeType === 'GLOBAL') {
+    batchAsig = document.getElementById('upload-asig-libre')?.value?.trim() || '';
+  } else {
+    const selVal = document.getElementById('upload-asig-select')?.value;
+    if (selVal === 'OTRA') {
+      batchAsig = document.getElementById('upload-asig-libre')?.value?.trim() || '';
+    } else {
+      batchAsig = selVal || '';
+    }
+  }
+
   const toSave = state.procResults.filter(r => r.include && r.status === 'success' && r.data);
   if (!toSave.length) { showToast('No hay resultados para guardar', 'error'); return; }
 
   toSave.forEach(r => {
     const d    = r.data;
     const tipo = d.tipo || state.homeType;
-    const numQ = tipo === 'PAES' ? 75 : (tipo === 'SIMCE' ? 45 : state.homeGlobalCount);
+    const numQ = keyObj ? keyObj.numQ : (tipo === 'PAES' ? 75 : (tipo === 'SIMCE' ? 45 : state.homeGlobalCount));
     const curso = buildCursoDisplay(d.nivel, d.curso);
     const answeredCount = Object.values(d.respuestas || {}).filter(Boolean).length;
 
@@ -716,13 +776,13 @@ function saveAllProcResults() {
       rut         : d.rut    || '',
       fecha       : new Date().toISOString().slice(0, 10),
       curso,
-      asig        : d.asignatura || '',
-      evaluacion  : '',
+      asig        : batchAsig || d.asignatura || '',
+      evaluacion  : keyObj ? keyObj.nombre : '',
       numQ,
       respuestas  : d.respuestas || {},
       answeredCount,
-      score       : calcScore(d.respuestas || {}, null, numQ),
-      keyId       : null,
+      score       : calcScore(d.respuestas || {}, keyId, numQ),
+      keyId       : keyId,
       source      : 'pdf',
       thumbUrl    : r.thumbUrl || null,
       createdAt   : new Date().toISOString(),
@@ -1224,6 +1284,95 @@ function formatRut(input) {
   if (v.length > 5) v = v.slice(0, -5) + '.' + v.slice(-5);
   if (v.length > 9) v = v.slice(0, -9) + '.' + v.slice(-9);
   input.value = v;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   BATCH CONFIG MANAGEMENT
+   ────────────────────────────────────────────────────────────── */
+function updateUploadConfigFields() {
+  const tipo = state.homeType;
+  const keySelect = document.getElementById('upload-key-select');
+  const asigSelect = document.getElementById('upload-asig-select');
+  const asigLibre = document.getElementById('upload-asig-libre');
+  const countGroup = document.getElementById('upload-count-group');
+
+  if (!keySelect || !asigSelect) return;
+
+  // 1. Populate Key selector
+  keySelect.innerHTML = '<option value="">— Sin pauta (solo extraer respuestas) —</option>';
+  const matchingKeys = state.keys.filter(k => k.tipo === tipo);
+  matchingKeys.forEach(k => {
+    keySelect.appendChild(new Option(k.nombre, k.id));
+  });
+
+  // 2. Populate Asignatura selector
+  asigSelect.innerHTML = '';
+  if (tipo === 'GLOBAL') {
+    asigSelect.style.display = 'none';
+    asigLibre.style.display = 'block';
+  } else {
+    asigSelect.style.display = 'block';
+    asigLibre.style.display = 'none';
+    asigSelect.innerHTML = '<option value="">— Seleccionar —</option>';
+    const cfg = CONFIG[tipo];
+    if (cfg && cfg.subjects) {
+      cfg.subjects.forEach(s => {
+        asigSelect.appendChild(new Option(s, s));
+      });
+    }
+    asigSelect.appendChild(new Option('Otra asignatura...', 'OTRA'));
+  }
+
+  // 3. Show/hide count group
+  if (countGroup) {
+    countGroup.style.display = tipo === 'GLOBAL' ? 'block' : 'none';
+  }
+}
+
+function handleUploadKeyChange() {
+  const keyId = document.getElementById('upload-key-select').value;
+  const asigSelect = document.getElementById('upload-asig-select');
+  const asigLibre = document.getElementById('upload-asig-libre');
+  
+  if (keyId) {
+    const key = state.keys.find(k => k.id === Number(keyId));
+    if (key) {
+      // Pre-fill subject
+      if (state.homeType === 'GLOBAL') {
+        if (asigLibre) {
+          asigLibre.value = key.asig || '';
+        }
+      } else {
+        if (asigSelect) {
+          const hasOption = Array.from(asigSelect.options).some(opt => opt.value === key.asig);
+          if (hasOption) {
+            asigSelect.value = key.asig;
+            asigLibre.style.display = 'none';
+          } else if (key.asig) {
+            asigSelect.value = 'OTRA';
+            asigLibre.value = key.asig;
+            asigLibre.style.display = 'block';
+          }
+        }
+      }
+
+      // Pre-fill number of questions for GLOBAL
+      if (state.homeType === 'GLOBAL') {
+        setHomeGlobalCount(key.numQ);
+      }
+    }
+  }
+}
+
+function handleUploadAsigChange() {
+  const asigSelect = document.getElementById('upload-asig-select');
+  const asigLibre = document.getElementById('upload-asig-libre');
+  if (asigSelect && asigLibre) {
+    asigLibre.style.display = asigSelect.value === 'OTRA' ? 'block' : 'none';
+    if (asigSelect.value !== 'OTRA') {
+      asigLibre.value = '';
+    }
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────
