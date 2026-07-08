@@ -209,6 +209,7 @@ function showView(name) {
 
   state.currentView = name;
 
+  if (name === 'home')      updateUploadConfigFields();
   if (name === 'registros') renderTable();
   if (name === 'claves')    renderKeys();
 }
@@ -946,6 +947,7 @@ function saveKey() {
 
   saveStorage();
   renderKeys();
+  updateUploadConfigFields();
   closeKeyModalDirect();
   showToast(`✓ Clave guardada (${answered}/${numQ} respuestas)`, 'success');
 }
@@ -994,6 +996,7 @@ function deleteKey(id) {
   state.keys = state.keys.filter(k => k.id !== id);
   saveStorage();
   renderKeys();
+  updateUploadConfigFields();
 }
 
 function closeKeyModal(e) {
