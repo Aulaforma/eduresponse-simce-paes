@@ -1,156 +1,58 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8">
   <title>Hoja de Respuestas SIMCE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',Arial,sans-serif;background:#fff;color:#111;font-size:10pt;padding:0}
-    @page{size:A4;margin:12mm}
-
-    .page{width:100%;max-width:190mm;margin:0 auto;padding:4mm}
-
+    body{font-family:'Inter',sans-serif;background:#f3f4f6;color:#111;padding:10mm 0}
+    .page{width:210mm;height:297mm;background:#fff;margin:0 auto;padding:12mm 15mm;position:relative;display:flex;flex-direction:column;box-shadow:0 0 10px rgba(0,0,0,0.1)}
+    
     /* Header */
-    .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2.5pt solid #111;padding-bottom:3mm;margin-bottom:3mm}
-    .header-title{font-size:15pt;font-weight:900;letter-spacing:.5px}
-    .logo-box{border:1.5pt solid #111;border-radius:4pt;padding:2mm 4mm;font-size:8pt;font-weight:700;letter-spacing:1px;color:#333}
-
+    .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2pt solid #111;padding-bottom:3mm;margin-bottom:5mm}
+    .header-title{font-size:16pt;font-weight:900;letter-spacing:.5px}
+    .logo-box{background:#111;color:#fff;font-weight:900;font-size:12pt;padding:1.5mm 3mm;border-radius:3px}
+    
     /* Info fields */
     .info-row{display:flex;gap:4mm;margin-bottom:2mm;align-items:baseline}
     .info-label{font-size:8pt;font-weight:700;white-space:nowrap;min-width:max-content}
     .info-line{flex:1;border-bottom:1pt solid #333;height:4mm}
     .info-fixed{font-size:8pt;font-weight:600;border-bottom:1pt solid #333;flex:1;padding-bottom:1mm}
-
-    /* Contenedores de estudiante y RUT */
-    .student-container {
-      display: flex;
-      justify-content: space-between;
-      gap: 6mm;
-      margin-bottom: 2mm;
-      align-items: stretch;
-    }
-    .student-left {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
     
-    /* RUT Container */
-    .rut-container {
-      border: 1.5pt solid #111;
-      border-radius: 4px;
-      padding: 1.5mm;
-      background: #fcfcfc;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: max-content;
-    }
-    .rut-title {
-      font-size: 7.5pt;
-      font-weight: 900;
-      letter-spacing: .5px;
-      margin-bottom: 1.5mm;
-      text-transform: uppercase;
-    }
-    .rut-grid-header {
-      display: flex;
-      gap: 1mm;
-      margin-bottom: 1.5mm;
-      align-items: center;
-    }
-    .rut-header-box {
-      width: 10pt;
-      height: 12pt;
-      border: 1pt solid #111;
-      background: #fff;
-    }
-    .rut-header-sep {
-      font-size: 8pt;
-      font-weight: 900;
-      margin: 0 1px;
-    }
-    .rut-grid {
-      display: flex;
-      gap: 1mm;
-      align-items: flex-start;
-    }
-    .rut-col {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-    .rut-col-sep {
-      align-self: center;
-      font-size: 10pt;
-      font-weight: 900;
-      margin: 0 1px;
-      margin-top: 12px;
-    }
-    .rut-bub-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: .2mm;
-    }
-    .rut-bub-item span {
-      font-size: 5.5pt;
-      font-weight: 700;
-      color: #111;
-    }
-    .rut-bub {
-      width: 8.5pt;
-      height: 8.5pt;
-      border-radius: 50%;
-      border: 1pt solid #222;
-      background: #fff;
-    }
-
-    /* Bubble rows */
-    .bubble-section{margin:2mm 0}
-    .bubble-row{display:flex;align-items:center;gap:2mm;margin:1.5mm 0}
-    .bubble-row-label{font-size:7.5pt;font-weight:700;min-width:50pt}
-    .bubbles{display:flex;gap:2.5mm;flex-wrap:wrap}
-    .bub-item{display:flex;flex-direction:column;align-items:center;gap:.5mm}
-    .bub-item span{font-size:6.5pt;color:#333;white-space:nowrap}
-    .bub{width:9pt;height:9pt;border-radius:50%;border:1pt solid #222;background:#fff}
-
     /* Instructions */
-    .instructions{border:1pt solid #aaa;border-radius:3pt;padding:2mm 3mm;margin:2mm 0;display:flex;align-items:center;gap:4mm}
-    .instructions p{font-size:7pt;color:#444}
-    .bub-example{display:flex;gap:2mm;align-items:center;font-size:7pt}
-    .bub-filled{width:9pt;height:9pt;border-radius:50%;border:1pt solid #111;background:#111}
-    .bub-wrong1{width:9pt;height:9pt;border-radius:50%;border:1pt solid #aaa;position:relative;overflow:hidden}
-    .bub-wrong1::before,.bub-wrong1::after{content:'';position:absolute;width:60%;height:1pt;background:#555;top:50%;left:20%;transform-origin:center}
-    .bub-wrong1::before{transform:rotate(45deg)}
-    .bub-wrong1::after{transform:rotate(-45deg)}
+    .instructions{border:1pt solid #aaa;border-radius:3pt;padding:2.5mm 4mm;margin:3mm 0;display:flex;align-items:center;gap:5mm;background:#fafafa}
+    .instructions p{font-size:7.5pt;color:#444}
+    .bub-example{display:flex;gap:2.5mm;align-items:center;font-size:7.5pt}
+    .bub-filled{width:11pt;height:11pt;border-radius:50%;border:1pt solid #111;background:#111}
+    .bub-wrong{width:11pt;height:11pt;border-radius:50%;border:1pt solid #aaa;position:relative}
+    .bub-wrong::before{content:'';position:absolute;width:60%;height:1pt;background:#555;top:50%;left:20%;transform:rotate(45deg)}
 
     /* Answer grid */
-    .answer-section{margin-top:3mm}
-    .answer-section-title{font-size:8pt;font-weight:700;text-align:center;margin-bottom:2mm;letter-spacing:.3px}
-    .columns{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm}
-    .column{border:1pt solid #bbb;border-radius:3pt;overflow:hidden}
-    .col-header{background:#111;color:#fff;font-size:7pt;font-weight:700;text-align:center;padding:1.5mm;letter-spacing:.5px}
-    .answer-row{display:flex;align-items:center;gap:2mm;padding:1mm 2mm;border-bottom:.5pt solid #e0e0e0}
+    .answer-section{margin-top:2mm;flex:1}
+    .columns{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm}
+    .column{border:1.2pt solid #444;border-radius:4px;overflow:hidden}
+    .col-header{background:#111;color:#fff;font-size:8pt;font-weight:900;text-align:center;padding:2mm;letter-spacing:.5px}
+    .answer-row{display:flex;align-items:center;justify-content:space-between;padding:2.2mm 3.5mm;border-bottom:.8pt solid #d0d0d0}
     .answer-row:last-child{border-bottom:none}
-    .answer-row:nth-child(even){background:#f9f9f9}
-    .q-num{font-size:7.5pt;font-weight:700;min-width:16pt;text-align:right;color:#555}
-    .opts{display:flex;gap:3mm}
-    .opt-bub{display:flex;flex-direction:column;align-items:center;gap:.5mm}
-    .opt-bub span{font-size:6pt;font-weight:700;color:#333}
-    .opt-circle{width:10pt;height:10pt;border-radius:50%;border:1pt solid #333;background:#fff}
+    .answer-row:nth-child(even){background:#f4f4f7}
+    .q-num{font-size:8.5pt;font-weight:900;min-width:18pt;text-align:left;color:#333}
+    .opts{display:flex;gap:4.5mm}
+    .opt-circle{width:14pt;height:14pt;border-radius:50%;border:1.2pt solid #222;background:#fff;font-size:8.5pt;font-weight:900;color:#222;display:flex;align-items:center;justify-content:center;user-select:none}
 
     /* Corner marks */
     .corner-marks{position:relative}
-    .cm{position:absolute;width:5mm;height:5mm;border:.5mm solid #000}
+    .cm{position:absolute;width:6mm;height:6mm;border:1.2mm solid #000}
     .cm.tl{top:0;left:0;border-right:none;border-bottom:none}
     .cm.tr{top:0;right:0;border-left:none;border-bottom:none}
     .cm.bl{bottom:0;left:0;border-right:none;border-top:none}
     .cm.br{bottom:0;right:0;border-left:none;border-top:none}
 
-    @media print{body{background:#fff} .no-print{display:none}}
+    @media print{
+      body{background:#fff;padding:0}
+      .page{box-shadow:none;margin:0;width:100%;height:100%}
+      .no-print{display:none}
+    }
     .print-btn{position:fixed;bottom:20px;right:20px;padding:10px 20px;background:#6366f1;color:#fff;border:none;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,.4)}
     .print-btn:hover{background:#4f46e5}
   </style>
@@ -158,77 +60,38 @@
 <body>
 <div class="page" id="main-page">
 
+  <!-- Corner marks for vision alignment -->
+  <div class="cm tl"></div>
+  <div class="cm tr"></div>
+
   <!-- HEADER -->
-  <div class="header">
+  <div class="header" style="display:flex;justify-content:space-between">
     <div class="header-title">HOJA DE RESPUESTAS</div>
     <div style="display:flex;align-items:center;gap:4mm">
-      <div style="font-size:7pt;text-align:right;color:#555">Sistema de Evaluación<br/>Escolar Chile</div>
+      <div style="font-size:7.5pt;text-align:right;color:#555">Sistema de Evaluación<br/>Escolar Chile</div>
       <div class="logo-box">SIMCE</div>
     </div>
   </div>
 
-  <!-- DATOS ESTUDIANTE Y SELECCIÓN DE CURSO / RUT -->
-  <div class="student-container">
-    <div class="student-left">
-      <div class="info-row">
-        <span class="info-label">Nombre completo:</span>
-        <div class="info-line"></div>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Establecimiento:</span>
-        <span class="info-fixed">Liceo Andrés Alcázar de Tucapel</span>
-      </div>
-
-      <!-- NIVEL / CURSO / FORMA BUBBLES -->
-      <div class="bubble-section">
-        <div class="bubble-row">
-          <span class="bubble-row-label">Nivel:</span>
-          <div class="bubbles" id="nivel-bubbles"></div>
-        </div>
-        <div class="bubble-row">
-          <span class="bubble-row-label">Curso:</span>
-          <div class="bubbles" id="curso-bubbles"></div>
-        </div>
-        <div class="bubble-row">
-          <span class="bubble-row-label">Forma:</span>
-          <div class="bubbles">
-            <div class="bub-item"><div class="bub"></div><span>A</span></div>
-            <div class="bub-item"><div class="bub"></div><span>B</span></div>
-            <div class="bub-item"><div class="bub"></div><span>C</span></div>
-          </div>
-        </div>
-      </div>
+  <!-- DATOS ESTUDIANTE -->
+  <div style="border:1pt solid #aaa;border-radius:4px;padding:4mm;background:#fbfbfb;margin-bottom:3mm">
+    <div class="info-row" style="margin-bottom:3mm">
+      <span class="info-label" style="font-size:9.5pt">Nombre completo:</span>
+      <div class="info-line"></div>
     </div>
-
-    <!-- RUT BUBBLE GRID -->
-    <div class="rut-container">
-      <span class="rut-title">RUT Estudiante</span>
-      <div class="rut-grid-header">
-        <div class="rut-header-box"></div>
-        <div class="rut-header-box"></div>
-        <div class="rut-header-box"></div>
-        <div class="rut-header-box"></div>
-        <div class="rut-header-box"></div>
-        <div class="rut-header-box"></div>
-        <div class="rut-header-box"></div>
-        <div class="rut-header-box"></div>
-        <div class="rut-header-sep">-</div>
-        <div class="rut-header-box"></div>
-      </div>
-      <div class="rut-grid" id="rut-grid-bubbles"></div>
+    <div class="info-row">
+      <span class="info-label" style="font-size:9.5pt">Establecimiento:</span>
+      <span class="info-fixed" style="font-size:9.5pt;font-weight:700;border:none">Liceo Andrés Alcázar de Tucapel</span>
     </div>
   </div>
 
   <!-- INSTRUCCIONES -->
   <div class="instructions">
-    <p>Forma de llenar los círculos:</p>
+    <p><strong>Instrucciones:</strong> Rellena completamente el círculo de la alternativa correcta con lápiz pasta negro o grafito oscuro.</p>
     <div class="bub-example">
       <span>Correcta:</span><div class="bub-filled"></div>
-      <span>Incorrectas:</span>
-      <div class="bub-wrong1"></div>
-      <div class="bub" style="border:1pt solid #aaa;background:#d0d0d0"></div>
+      <span>Incorrecta:</span><div class="bub-wrong"></div>
     </div>
-    <p style="margin-left:auto;font-size:6.5pt;color:#777">SIMCE · 45 preguntas · Opciones A, B, C, D</p>
   </div>
 
   <!-- ANSWER GRID -->
@@ -236,62 +99,14 @@
     <div class="columns" id="simce-columns"></div>
   </div>
 
+  <div class="cm bl"></div>
+  <div class="cm br"></div>
+
 </div>
 
 <button class="print-btn no-print" onclick="window.print()">🖨 Imprimir</button>
 
 <script>
-  // RUT bubbles
-  const rutGridEl = document.getElementById('rut-grid-bubbles');
-  for (let col = 0; col < 9; col++) {
-    const colDiv = document.createElement('div');
-    colDiv.className = 'rut-col';
-    
-    if (col === 8) {
-      const sep = document.createElement('div');
-      sep.className = 'rut-col-sep';
-      sep.textContent = '-';
-      rutGridEl.appendChild(sep);
-    }
-    
-    const isDV = (col === 8);
-    const digits = isDV ? ['0','1','2','3','4','5','6','7','8','9','K'] : ['0','1','2','3','4','5','6','7','8','9'];
-    
-    digits.forEach(d => {
-      const bubItem = document.createElement('div');
-      bubItem.className = 'rut-bub-item';
-      bubItem.innerHTML = `<div class="rut-bub"></div><span>${d}</span>`;
-      colDiv.appendChild(bubItem);
-    });
-    rutGridEl.appendChild(colDiv);
-  }
-
-  // Nivel bubbles
-  const niveles = [
-    {label:'1°B',text:'1°'},
-    {label:'2°B',text:'2°'},
-    {label:'3°B',text:'3°'},
-    {label:'4°B',text:'4°'},
-    {label:'5°B',text:'5°'},
-    {label:'6°B',text:'6°'},
-    {label:'7°B',text:'7°'},
-    {label:'8°B',text:'8°'},
-    {label:'1°M',text:'1°M'},
-    {label:'2°M',text:'2°M'},
-    {label:'3°M',text:'3°M'},
-    {label:'4°M',text:'4°M'},
-  ];
-  const nivelEl = document.getElementById('nivel-bubbles');
-  niveles.forEach(n => {
-    nivelEl.innerHTML += `<div class="bub-item"><div class="bub"></div><span>${n.text}</span></div>`;
-  });
-
-  // Curso bubbles
-  const cursoEl = document.getElementById('curso-bubbles');
-  'abcdefghij'.split('').forEach(l => {
-    cursoEl.innerHTML += `<div class="bub-item"><div class="bub"></div><span>${l}</span></div>`;
-  });
-
   // Answer grid (45 questions, 3 cols of 15)
   const colsEl = document.getElementById('simce-columns');
   const opts = ['A','B','C','D'];
@@ -304,7 +119,7 @@
         <span class="q-num">${q.toString().padStart(2,'0')}</span>
         <div class="opts">`;
       opts.forEach(o => {
-        html += `<div class="opt-bub"><div class="opt-circle"></div><span>${o}</span></div>`;
+        html += `<div class="opt-circle">${o}</div>`;
       });
       html += `</div></div>`;
     }

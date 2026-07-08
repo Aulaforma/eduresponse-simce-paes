@@ -46,35 +46,25 @@ const PROMPT_SIMCE = `
 Analiza esta imagen de una Hoja de Respuestas para ensayo SIMCE escolar chileno.
 
 ESTRUCTURA DE LA HOJA:
-- Parte superior izquierda:
-  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este texto.
+- Parte superior:
+  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este nombre.
   * Texto fijo "Establecimiento: Liceo Andrés Alcázar de Tucapel". No necesitas extraerlo.
-  * Fila "Nivel": burbujas que indican el año escolar (1° Básico a 4° Medio).
-  * Fila "Curso": burbujas con letras (A, B, C, D...) que representan la letra del curso.
-  * Fila "Forma": burbujas de opción (A, B, C).
-- Parte superior derecha:
-  * Grilla de burbujas para "RUT": 9 columnas con burbujas de dígitos. Las primeras 8 columnas van de 0 a 9. La novena columna (dígito verificador) contiene dígitos 0-9 y la letra K.
-    Reconstruye el RUT de izquierda a derecha identificando qué burbuja está marcada en cada columna. Añade el guion antes de la última columna (ej. "12345678-9" o "23456789-K").
 - Parte inferior: grilla con 45 preguntas organizadas en 3 columnas de 15 preguntas cada una:
   * Columna 1 (izquierda): preguntas 01 a 15.
   * Columna 2 (centro): preguntas 16 a 30.
   * Columna 3 (derecha): preguntas 31 a 45.
-  Cada pregunta está en una fila con su número correspondiente y sus 4 burbujas de opciones: A, B, C, D.
+  Cada pregunta está en una fila con su número correspondiente y sus 4 círculos de opciones: A, B, C, D (la letra está escrita dentro de los círculos).
 
-REGLAS PARA DETECTAR BURBUJAS (RUT, Nivel, Curso, Respuestas):
-- Una burbuja RELLENA/OSCURA/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
-- Una burbuja VACÍA/CLARA/SIN MARCA = no seleccionada (null).
-- IMPORTANTE: Analiza con mucho cuidado cada burbuja de cada columna y pregunta. Busca marcas de lápiz dentro de la circunferencia. Si la marca está rellena o tiene un trazo oscuro adentro, considérala marcada. Si no hay marcas o el círculo está limpio, es nulo (null).
+REGLAS PARA DETECTAR BURBUJAS (Respuestas):
+- Un círculo RELLENO/OSCURO/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
+- Un círculo VACÍO/CLARO/SIN MARCA = no seleccionada (null).
+- IMPORTANTE: Analiza con mucho cuidado cada círculo de cada pregunta. Si la marca está rellena o tiene un trazo oscuro adentro, considérala marcada. Si no hay marcas o el círculo está limpio, es nulo (null).
 - Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
-- Si no hay marca en una columna o pregunta, usa null.
+- Si no hay marca en una pregunta, usa null.
 
 Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
 {
   "nombre": "nombre del estudiante o null",
-  "rut": "RUT completo detectado (ej: '12345678-9') o null",
-  "nivel": "nivel detectado (ej: '2° Básico', '4° Básico', '2° Medio') o null",
-  "curso": "letra del curso detectada (ej: 'A', 'B') o null",
-  "forma": "letra de la forma detectada (A, B o C) o null",
   "tipo": "SIMCE",
   "respuestas": {
     "1": "A o B o C o D o null",
@@ -89,37 +79,25 @@ const PROMPT_PAES = `
 Analiza esta imagen de una Hoja de Respuestas para ensayo PAES escolar chileno.
 
 ESTRUCTURA DE LA HOJA:
-- Parte superior izquierda:
-  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este texto.
+- Parte superior:
+  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este nombre.
   * Texto fijo "Establecimiento: Liceo Andrés Alcázar de Tucapel". No necesitas extraerlo.
-  * Fila "Nivel/Curso": burbujas que indican el año escolar (3° Medio o 4° Medio).
-  * Fila "Curso": burbujas con letras (A, B, C, D...) que representan la letra del curso.
-  * Fila "Forma": burbujas de opción (A, B, C).
-- Parte superior derecha:
-  * Grilla de burbujas para "RUT": 9 columnas con burbujas de dígitos. Las primeras 8 columnas van de 0 a 9. La novena columna (dígito verificador) contiene dígitos 0-9 y la letra K.
-    Reconstruye el RUT de izquierda a derecha identificando qué burbuja está marcada en cada columna. Añade el guion antes de la última columna (ej. "12345678-9" o "23456789-K").
-- Parte inferior: grilla con 75 preguntas organizadas en 5 columnas de 15 preguntas cada una:
-  * Columna 1: preguntas 01 a 15.
-  * Columna 2: preguntas 16 a 30.
-  * Columna 3: preguntas 31 a 45.
-  * Columna 4: preguntas 46 a 60.
-  * Columna 5: preguntas 61 a 75.
-  Cada pregunta está en una fila con su número correspondiente y sus 5 burbujas de opciones: A, B, C, D, E.
+- Parte inferior: grilla con 75 preguntas organizadas en 3 columnas de 25 preguntas cada una:
+  * Columna 1 (izquierda): preguntas 01 a 25.
+  * Columna 2 (centro): preguntas 26 a 50.
+  * Columna 3 (derecha): preguntas 51 a 75.
+  Cada pregunta está en una fila con su número correspondiente y sus 5 círculos de opciones: A, B, C, D, E (la letra está escrita dentro de los círculos).
 
-REGLAS PARA DETECTAR BURBUJAS (RUT, Nivel, Curso, Respuestas):
-- Una burbuja RELLENA/OSCURA/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
-- Una burbuja VACÍA/CLARA/SIN MARCA = no seleccionada (null).
-- IMPORTANTE: Analiza con mucho cuidado cada burbuja de cada columna y pregunta. Busca marcas de lápiz dentro de la circunferencia. Si la marca está rellena o tiene un trazo oscuro adentro, considérala marcada. Si no hay marcas o el círculo está limpio, es nulo (null).
+REGLAS PARA DETECTAR BURBUJAS (Respuestas):
+- Un círculo RELLENO/OSCURO/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
+- Un círculo VACÍO/CLARA/SIN MARCA = no seleccionada (null).
+- IMPORTANTE: Analiza con mucho cuidado cada círculo de cada pregunta. Si la marca está rellena o tiene un trazo oscuro adentro, considérala marcada. Si no hay marcas o el círculo está limpio, es nulo (null).
 - Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
-- Si no hay marca en una columna o pregunta, usa null.
+- Si no hay marca en una pregunta, usa null.
 
 Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
 {
   "nombre": "nombre del estudiante o null",
-  "rut": "RUT completo detectado (ej: '12345678-9') o null",
-  "nivel": "nivel detectado (ej: '3° Medio', '4° Medio') o null",
-  "curso": "letra del curso detectada (ej: 'A', 'B') o null",
-  "forma": "letra de la forma detectada (A, B o C) o null",
   "tipo": "PAES",
   "respuestas": {
     "1": "A o B o C o D o E o null",
@@ -133,31 +111,17 @@ Incluye las 75 preguntas aunque algunas sean null.
 const PROMPT_GLOBAL = (n) => `
 Analiza esta imagen de una Hoja de Respuestas de evaluación escolar chilena.
 
-La hoja tiene ${n} preguntas con opciones A, B, C, D.
+La hoja tiene ${n} preguntas con opciones A, B, C, D (la letra está escrita dentro de los círculos).
 
 ESTRUCTURA DE LA HOJA:
-- Parte superior izquierda:
-  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este texto.
+- Parte superior:
+  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este nombre.
   * Texto fijo "Establecimiento: Liceo Andrés Alcázar de Tucapel".
-  * Fila "Nivel": burbujas que indican el nivel escolar.
-  * Fila "Curso": letra de curso (A, B, C...).
-- Parte superior derecha:
-  * Grilla de burbujas del "RUT": 9 columnas con dígitos (las primeras 8 son 0-9, la última es 0-9 y K). Reconstruye el RUT completo con guion antes de la última columna (ej. "12345678-9").
 - Grilla de respuestas: de la pregunta 1 a la ${n}. Las preguntas están organizadas en columnas verticales de 15 o 20 preguntas. Cada fila tiene su número y sus opciones A, B, C, D.
-
-REGLAS PARA DETECTAR BURBUJAS (RUT, Nivel, Curso, Respuestas):
-- Una burbuja RELLENA/OSCURA/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
-- Una burbuja VACÍA/CLARA/SIN MARCA = no seleccionada (null).
-- IMPORTANTE: Analiza con mucho cuidado cada burbuja. Busca marcas de lápiz dentro de la circunferencia. Si está rellena, considérala marcada. Si no hay marcas, es null.
-- Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
-- Si no hay marca en una columna o pregunta, usa null.
 
 Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
 {
   "nombre": "nombre del estudiante o null",
-  "rut": "RUT completo detectado o null",
-  "nivel": "nivel escolar detectado o null",
-  "curso": "letra de curso detectada o null",
   "tipo": "GLOBAL",
   "respuestas": {
     "1": "A o B o C o D o null",
@@ -784,7 +748,15 @@ function saveAllProcResults() {
     const d    = r.data;
     const tipo = d.tipo || state.homeType;
     const numQ = keyObj ? keyObj.numQ : (tipo === 'PAES' ? 75 : (tipo === 'SIMCE' ? 45 : state.homeGlobalCount));
-    const curso = buildCursoDisplay(d.nivel, d.curso);
+    
+    // Determine curso
+    let batchCurso = '';
+    if (keyObj && keyObj.curso) {
+      batchCurso = keyObj.curso;
+    } else {
+      batchCurso = document.getElementById('upload-curso-select')?.value || '';
+    }
+    const curso = batchCurso || buildCursoDisplay(d.nivel, d.curso);
     const answeredCount = Object.values(d.respuestas || {}).filter(Boolean).length;
 
     const record = {
@@ -1314,9 +1286,10 @@ function updateUploadConfigFields() {
   const keySelect = document.getElementById('upload-key-select');
   const asigSelect = document.getElementById('upload-asig-select');
   const asigLibre = document.getElementById('upload-asig-libre');
+  const cursoSelect = document.getElementById('upload-curso-select');
   const countGroup = document.getElementById('upload-count-group');
 
-  if (!keySelect || !asigSelect) return;
+  if (!keySelect || !asigSelect || !cursoSelect) return;
 
   // 1. Populate Key selector
   keySelect.innerHTML = '<option value="">— Sin pauta (solo extraer respuestas) —</option>';
@@ -1343,7 +1316,15 @@ function updateUploadConfigFields() {
     asigSelect.appendChild(new Option('Otra asignatura...', 'OTRA'));
   }
 
-  // 3. Show/hide count group
+  // 3. Populate Curso selector
+  cursoSelect.innerHTML = '<option value="">— Seleccionar Curso —</option>';
+  const cfg = CONFIG[tipo];
+  const courses = tipo === 'GLOBAL' ? CONFIG.GLOBAL.courses : (cfg ? cfg.courses : []);
+  courses.forEach(c => {
+    cursoSelect.appendChild(new Option(c, c));
+  });
+
+  // 4. Show/hide count group
   if (countGroup) {
     countGroup.style.display = tipo === 'GLOBAL' ? 'block' : 'none';
   }
@@ -1353,6 +1334,7 @@ function handleUploadKeyChange() {
   const keyId = document.getElementById('upload-key-select').value;
   const asigSelect = document.getElementById('upload-asig-select');
   const asigLibre = document.getElementById('upload-asig-libre');
+  const cursoSelect = document.getElementById('upload-curso-select');
   
   if (keyId) {
     const key = state.keys.find(k => k.id === Number(keyId));
@@ -1374,6 +1356,11 @@ function handleUploadKeyChange() {
             asigLibre.style.display = 'block';
           }
         }
+      }
+
+      // Pre-fill course
+      if (cursoSelect && key.curso) {
+        cursoSelect.value = key.curso;
       }
 
       // Pre-fill number of questions for GLOBAL
