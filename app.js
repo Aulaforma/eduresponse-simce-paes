@@ -43,86 +43,102 @@ const CONFIG = {
    GEMINI PROMPTS
    ────────────────────────────────────────────────────────────── */
 const PROMPT_SIMCE = `
-Analiza esta imagen de una Hoja de Respuestas para ensayo SIMCE escolar chileno.
+Analiza detenidamente esta imagen de una Hoja de Respuestas para ensayo SIMCE escolar chileno.
 
-ESTRUCTURA DE LA HOJA:
-- Parte superior:
-  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este nombre.
-  * Texto fijo "Establecimiento: Liceo Andrés Alcázar de Tucapel". No necesitas extraerlo.
-- Parte inferior: grilla con 45 preguntas organizadas en 3 columnas de 15 preguntas cada una:
-  * Columna 1 (izquierda): preguntas 01 a 15.
-  * Columna 2 (centro): preguntas 16 a 30.
-  * Columna 3 (derecha): preguntas 31 a 45.
-  Cada pregunta está en una fila con su número correspondiente y sus 4 círculos de opciones: A, B, C, D (la letra está escrita dentro de los círculos).
+1. ORIENTACIÓN Y ALINEACIÓN DE LA IMAGEN:
+- Antes de leer, determina la orientación de la hoja: debe estar vertical, con el nombre del alumno arriba y las grillas abajo. Si está girada o rotada, rota la imagen mentalmente 90, 180 o 270 grados para leerla al derecho.
+- La hoja impresa contiene 4 marcas de esquina negras en forma de escuadra (L) o L-marks en las esquinas extremas del papel. Utilízalas como referencia espacial para corregir mentalmente cualquier distorsión de perspectiva o inclinación de la foto.
 
-REGLAS PARA DETECTAR BURBUJAS (Respuestas):
-- Un círculo RELLENO/OSCURO/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
-- Un círculo VACÍO/CLARO/SIN MARCA = no seleccionada (null).
-- IMPORTANTE: Analiza con mucho cuidado cada círculo de cada pregunta. Si la marca está rellena o tiene un trazo oscuro adentro, considérala marcada. Si no hay marcas o el círculo está limpio, es nulo (null).
-- Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
-- Si no hay marca en una pregunta, usa null.
+2. ESTRUCTURA DE LAS PREGUNTAS:
+- Columna 1 (izquierda): Preguntas 01 a 15.
+- Columna 2 (centro): Preguntas 16 a 30.
+- Columna 3 (derecha): Preguntas 31 a 45.
+Cada columna tiene una cabecera como "Preguntas 01 – 15". Cada pregunta se ubica en una fila horizontal identificada por su número a la izquierda (por ejemplo: "01", "02", ..., "45").
+En cada fila horizontal hay exactamente 4 círculos alineados de izquierda a derecha correspondientes a las opciones A, B, C y D.
+
+3. REGLAS CRÍTICAS DE DETECCIÓN Y GRADO DE CONFIANZA:
+- Una opción está seleccionada si el círculo correspondiente tiene una marca explícita del estudiante: relleno oscuro completo o parcial, una "X" (cruz) marcada encima, un check ("✓"), o un rayón/mancha de lápiz notable.
+- Determina la respuesta por la POSICIÓN del círculo marcado (1º = A, 2º = B, 3º = C, 4º = D), no intentes leer la letra adentro, ya que si está marcada, la letra estará tapada o distorsionada.
+- EVITAR ALUCINACIÓN: Si en una fila todos los 4 círculos están limpios, blancos y sin marcas (la letra A, B, C, D se ve perfectamente blanca e intacta), la respuesta es estrictamente null. ¡No adivines ni inventes respuestas! Si la pregunta está vacía, reporta null. Si tienes dudas de si hay una marca o si es un borrón o sombra, asume que está vacía (null).
+
+4. MÉTODO DE RAZONAMIENTO PASO A PASO (Chain of Thought):
+Para asegurar una precisión absoluta, analiza la hoja columna por columna y pregunta por pregunta. En la propiedad "observaciones_analisis" de tu respuesta JSON, describe brevemente qué marca ves para cada pregunta (ejemplo: "Pregunta 01: Marca clara en el primer círculo (A). Pregunta 02: Marca de cruz en el segundo círculo (B). Pregunta 03: Todos los círculos limpios (null). ..."). Luego, mapea esta conclusión al campo "respuestas".
 
 Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
 {
-  "nombre": "nombre del estudiante o null",
+  "nombre": "nombre del estudiante escrito a mano en la parte superior, o null si está vacío/ilegible",
   "tipo": "SIMCE",
+  "observaciones_analisis": "Texto libre con el análisis paso a paso pregunta por pregunta de la 1 a la 45 para asegurar que no se salten filas o columnas",
   "respuestas": {
     "1": "A o B o C o D o null",
     "2": "A o B o C o D o null",
     "...": "... continuar hasta la pregunta 45 ..."
   }
 }
-Incluye las 45 preguntas aunque algunas sean null.
+Incluye las 45 preguntas en el JSON.
 `;
 
 const PROMPT_PAES = `
-Analiza esta imagen de una Hoja de Respuestas para ensayo PAES escolar chileno.
+Analiza detenidamente esta imagen de una Hoja de Respuestas para ensayo PAES escolar chileno.
 
-ESTRUCTURA DE LA HOJA:
-- Parte superior:
-  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este nombre.
-  * Texto fijo "Establecimiento: Liceo Andrés Alcázar de Tucapel". No necesitas extraerlo.
-- Parte inferior: grilla con 75 preguntas organizadas en 3 columnas de 25 preguntas cada una:
-  * Columna 1 (izquierda): preguntas 01 a 25.
-  * Columna 2 (centro): preguntas 26 a 50.
-  * Columna 3 (derecha): preguntas 51 a 75.
-  Cada pregunta está en una fila con su número correspondiente y sus 5 círculos de opciones: A, B, C, D, E (la letra está escrita dentro de los círculos).
+1. ORIENTACIÓN Y ALINEACIÓN DE LA IMAGEN:
+- Antes de leer, determina la orientación de la hoja: debe estar vertical, con el nombre del alumno arriba y las grillas abajo. Si está girada o rotada, rota la imagen mentalmente 90, 180 o 270 grados para leerla al derecho.
+- La hoja impresa contiene 4 marcas de esquina negras en forma de escuadra (L) o L-marks en las esquinas extremas del papel. Utilízalas como referencia espacial para corregir mentalmente cualquier distorsión de perspectiva o inclinación de la foto.
 
-REGLAS PARA DETECTAR BURBUJAS (Respuestas):
-- Un círculo RELLENO/OSCURO/NEGRA/CON MARCA DE LÁPIZ = opción seleccionada.
-- Un círculo VACÍO/CLARA/SIN MARCA = no seleccionada (null).
-- IMPORTANTE: Analiza con mucho cuidado cada círculo de cada pregunta. Si la marca está rellena o tiene un trazo oscuro adentro, considérala marcada. Si no hay marcas o el círculo está limpio, es nulo (null).
-- Si hay marcas parciales o borrosas, elige la que parezca más intencionada.
-- Si no hay marca en una pregunta, usa null.
+2. ESTRUCTURA DE LAS PREGUNTAS:
+- Columna 1 (izquierda): Preguntas 01 a 25.
+- Columna 2 (centro): Preguntas 26 a 50.
+- Columna 3 (derecha): Preguntas 51 a 75.
+Cada columna tiene una cabecera como "Preguntas 01 – 25". Cada pregunta se ubica en una fila horizontal identificada por su número a la izquierda.
+En cada fila horizontal hay exactamente 5 círculos alineados de izquierda a derecha correspondientes a las opciones A, B, C, D y E.
+
+3. REGLAS CRÍTICAS DE DETECCIÓN Y GRADO DE CONFIANZA:
+- Una opción está seleccionada si el círculo correspondiente tiene una marca explícita del estudiante: relleno oscuro completo o parcial, una "X" (cruz) marcada encima, un check ("✓"), o un rayón/mancha de lápiz notable.
+- Determina la respuesta por la POSICIÓN del círculo marcado (1º = A, 2º = B, 3º = C, 4º = D, 5º = E), no intentes leer la letra adentro, ya que si está marcada, la letra estará tapada o distorsionada.
+- EVITAR ALUCINACIÓN: Si en una fila todos los 5 círculos están limpios, blancos y sin marcas (la letra A, B, C, D, E se ve perfectamente blanca e intacta), la respuesta es estrictamente null. ¡No adivines ni inventes respuestas! Si la pregunta está vacía, reporta null. Si tienes dudas de si hay una marca o si es un borrón o sombra, asume que está vacía (null).
+
+4. MÉTODO DE RAZONAMIENTO PASO A PASO (Chain of Thought):
+Para asegurar una precisión absoluta, analiza la hoja columna por columna y pregunta por pregunta. En la propiedad "observaciones_analisis" de tu respuesta JSON, describe brevemente qué marca ves para cada pregunta (ejemplo: "Pregunta 01: Marca clara en el primer círculo (A). Pregunta 02: Marca de cruz en el segundo círculo (B). ..."). Luego, mapea esta conclusión al campo "respuestas".
 
 Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
 {
-  "nombre": "nombre del estudiante o null",
+  "nombre": "nombre del estudiante escrito a mano en la parte superior, o null si está vacío/ilegible",
   "tipo": "PAES",
+  "observaciones_analisis": "Texto libre con el análisis paso a paso pregunta por pregunta de la 1 a la 75 para asegurar que no se salten filas o columnas",
   "respuestas": {
     "1": "A o B o C o D o E o null",
     "2": "A o B o C o D o E o null",
     "...": "... continuar hasta la pregunta 75 ..."
   }
 }
-Incluye las 75 preguntas aunque algunas sean null.
+Incluye las 75 preguntas en el JSON.
 `;
 
 const PROMPT_GLOBAL = (n) => `
-Analiza esta imagen de una Hoja de Respuestas de evaluación escolar chilena.
+Analiza detenidamente esta imagen de una Hoja de Respuestas de evaluación escolar chilena.
 
 La hoja tiene ${n} preguntas con opciones A, B, C, D (la letra está escrita dentro de los círculos).
 
-ESTRUCTURA DE LA HOJA:
-- Parte superior:
-  * Campo de texto "Nombre completo": contiene el nombre escrito a mano por el alumno. Extrae este nombre.
-  * Texto fijo "Establecimiento: Liceo Andrés Alcázar de Tucapel".
-- Grilla de respuestas: de la pregunta 1 a la ${n}. Las preguntas están organizadas en columnas verticales de 15 o 20 preguntas. Cada fila tiene su número y sus opciones A, B, C, D.
+1. ORIENTACIÓN Y ALINEACIÓN DE LA IMAGEN:
+- Determina la orientación de la hoja: debe estar vertical, con el nombre del alumno arriba y las grillas abajo. Si está girada o rotada, rota la imagen mentalmente 90, 180 o 270 grados para leerla al derecho.
+- La hoja impresa contiene 4 marcas de esquina negras en forma de escuadra (L) o L-marks en las esquinas extremas del papel. Utilízalas como referencia espacial para corregir mentalmente cualquier distorsión de perspectiva o inclinación de la foto.
+
+2. ESTRUCTURA DE LAS PREGUNTAS:
+- Las preguntas están organizadas en columnas verticales de 15 o 20 preguntas cada una. Cada fila tiene su número de pregunta a la izquierda y sus opciones A, B, C, D alineadas horizontalmente.
+
+3. REGLAS CRÍTICAS DE DETECCIÓN Y GRADO DE CONFIANZA:
+- Una opción está seleccionada si el círculo correspondiente tiene una marca explícita del estudiante: relleno oscuro completo o parcial, una "X" (cruz) marcada encima, un check ("✓"), o un rayón/mancha de lápiz notable.
+- Determina la respuesta por la POSICIÓN del círculo marcado (1º = A, 2º = B, 3º = C, 4º = D), no intentes leer la letra adentro, ya que si está marcada, la letra estará tapada o distorsionada.
+- EVITAR ALUCINACIÓN: Si en una fila todos los círculos están limpios, blancos y sin marcas, la respuesta es estrictamente null. ¡No adivines ni inventes respuestas! Si la pregunta está vacía, reporta null. Si tienes dudas de si hay una marca o si es un borrón o sombra, asume que está vacía (null).
+
+4. MÉTODO DE RAZONAMIENTO PASO A PASO (Chain of Thought):
+Para asegurar una precisión absoluta, analiza la hoja columna por columna y pregunta por pregunta. En la propiedad "observaciones_analisis" de tu respuesta JSON, describe brevemente qué marca ves para cada pregunta. Luego, mapea esta conclusión al campo "respuestas".
 
 Devuelve ÚNICAMENTE el siguiente JSON (sin texto extra, sin markdown, sin bloques de código):
 {
-  "nombre": "nombre del estudiante o null",
+  "nombre": "nombre del estudiante escrito a mano en la parte superior, o null si está vacío/ilegible",
   "tipo": "GLOBAL",
+  "observaciones_analisis": "Texto libre con el análisis paso a paso pregunta por pregunta de la 1 a la ${n} para asegurar que no se salten filas o columnas",
   "respuestas": {
     "1": "A o B o C o D o null",
     "...": "... continuar hasta la pregunta ${n} ..."
