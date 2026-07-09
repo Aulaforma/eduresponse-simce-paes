@@ -1402,6 +1402,7 @@ function handleUploadAsigChange() {
    INIT
    ────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("EduResponse App Loaded - Version 3.1 (Chain of Thought Prompts v3)");
   loadStorage();
   updateBadge();
 
